@@ -51,22 +51,29 @@ class Game {
   createPoolCue() {
     this.poolCue = new PoolCue(
       this.context,
-      (2 * this.canvas.width) / 3,
-      this.canvas.height / 2,
+      this.canvas.width / 2,
+      this.canvas.height / 3,
       this.poolCueHeight,
       this.poolCueWidth,
       0
     );
   }
   insertBalls() {
-    let color1 = "white";
+    let colorBalls = ["white", "blue"];
     this.balls.push(
       new Balls(
         this.context,
-        this.canvas.width / 2,
+        (4 * this.canvas.width) / 5,
         this.canvas.height / 2,
         this.ballsRadius,
-        color1
+        colorBalls[0]
+      ),
+      new Balls(
+        this.context,
+        (1 * this.canvas.width) / 3,
+        this.canvas.height / 2,
+        this.ballsRadius,
+        colorBalls[1]
       )
     );
   }
@@ -100,9 +107,9 @@ class Game {
         let x = wall.posX;
         let y = wall.posY;
         switch (wall.rotationAngle) {
-          case 0: //up walls
+          case 0: //====-up walls-====
             if (ballY - r < y + h && ballX >= x + h && ballX <= x + w - h) {
-              // straight walls
+              // STRAIGHT WALLS
               ball.Vy *= -1;
             } else if (ballX < x + h && ballX > x) {
               // inclined walls
@@ -118,9 +125,9 @@ class Game {
               }
             }
             break;
-          case 90: // right wall
+          case 90: // ====-right wall-====
             if (ballX + r > x - h && ballY >= y + h && ballY <= y + w - h) {
-              // straight walls
+              // STRAIGHT WALLS
               ball.Vx *= -1;
             } else if (ballY < y + h && ballY > y) {
               if (ballX + radProj > x - h + (y + h - (ballY + radProj))) {
@@ -134,9 +141,9 @@ class Game {
               }
             }
             break;
-          case 180: //down walls
+          case 180: //====-down walls-=====
             if (ballY + r > y - h && ballX >= x - w + h && ballX <= x - h) {
-              // straight walls
+              // STRAIGHT WALLS
               ball.Vy *= -1;
             } else if (ballX < x && ballX > x - h) {
               // inclined walls
@@ -151,9 +158,9 @@ class Game {
               }
             }
             break;
-          case -90: // left wall
+          case -90: // ====-left wall-====
             if (ballX - r < x + h && ballY >= y - w + h && ballY <= y - h) {
-              // straight walls
+              // STRAIGHT WALLS
               ball.Vx *= -1;
             } else if (ballY > y - w && ballY < y - w + h) {
               if (ballX - radProj < x + h - (y - w + h - (ballY + radProj))) {
@@ -171,6 +178,166 @@ class Game {
       });
     });
   }
+  checkIfBallSinked() {
+    this.balls.forEach((ball, indice) => {
+      let posX = (4 * this.canvas.width) / 5;
+      this.holes.forEach((hole) => {
+        let distanceBallHole = Math.sqrt(
+          (ball.posX - hole.posX) ** 2 + (ball.posY - hole.posY) ** 2
+        );
+        if (distanceBallHole <= hole.radius) {
+          this.balls.splice(indice, 1);
+          let color1 = "white";
+          if (ball.color === color1) {
+            console.log("White ball sinked, you lose point!");
+            let posY = this.canvas.height / 2;
+            /*
+            //check if there is free space to insert white ball again if it was sinked
+            //case negative, subtract a ball diameter from original X position
+            if (
+              ball.posX - ball.radius < posX + ball.radius &&
+              ball.posX + ball.radius > posX - ball.radius
+            ) {
+              posX -= ball.radius * 2;
+            }*/
+            this.balls.push(
+              new Balls(this.context, posX, posY, this.ballsRadius, color1)
+            );
+          }
+        }
+      });
+    });
+  }
+  transferVelocity(ball1, ball2, colidedBalls) {
+    let v1Modulus = Math.sqrt(ball1.Vx ** 2 + ball1.Vy ** 2);
+    let vnAngle, v1Angle, angleBetween, signalX, signalY;
+    let v1Quadrant4 = ball1.Vx > 0 && ball1.Vy <= 0;
+    let v1Quadrant3 = ball1.Vx <= 0 && ball1.Vy < 0;
+    let v1Quadrant2 = ball1.Vx < 0 && ball1.Vy >= 0;
+    let v1Quadrant1 = ball1.Vx >= 0 && ball1.Vy > 0;
+    let vnQuadrant4 = ball2.posX > ball1.posX && ball2.posY <= ball1.posY;
+    let vnQuadrant3 = ball2.posX <= ball1.posX && ball2.posY < ball1.posY;
+    let vnQuadrant2 = ball2.posX < ball1.posX && ball2.posY >= ball1.posY;
+    let vnQuadrant1 = ball2.posX >= ball1.posX && ball2.posY > ball1.posY;
+    switch (true) {
+      case vnQuadrant4:
+        signalX = 1;
+        signalY = -1;
+        vnAngle = Math.atan(
+          (ball1.posY - ball2.posY) / (ball2.posX - ball1.posX)
+        );
+        switch (true) {
+          case v1Quadrant4:
+            v1Angle = Math.atan(-ball1.Vy / ball1.Vx);
+            angleBetween = Math.abs(vnAngle - v1Angle);
+            break;
+          case v1Quadrant3:
+            v1Angle = Math.atan(-ball1.Vx / -ball1.Vy);
+            angleBetween = Math.PI / 2 - vnAngle + v1Angle;
+            break;
+          case v1Quadrant1:
+            v1Angle = Math.atan(ball1.Vy / ball1.Vx);
+            angleBetween = vnAngle + v1Angle;
+            break;
+        }
+        break;
+      case vnQuadrant3:
+        signalX = -1;
+        signalY = -1;
+        vnAngle = Math.atan(
+          (ball1.posY - ball2.posY) / (ball1.posX - ball2.posX)
+        );
+        switch (true) {
+          case v1Quadrant4:
+            v1Angle = Math.atan(ball1.Vx / -ball1.Vy);
+            angleBetween = Math.PI / 2 - vnAngle + v1Angle;
+            break;
+          case v1Quadrant3:
+            v1Angle = Math.atan(-ball1.Vy / -ball1.Vx);
+            angleBetween = Math.abs(vnAngle - v1Angle);
+            break;
+          case v1Quadrant2:
+            v1Angle = Math.atan(ball1.Vy / -ball1.Vx);
+            angleBetween = vnAngle + v1Angle;
+            break;
+        }
+        break;
+      case vnQuadrant2:
+        signalX = -1;
+        signalY = 1;
+        vnAngle = Math.atan(
+          (ball2.posY - ball1.posY) / (ball1.posX - ball2.posX)
+        );
+        switch (true) {
+          case v1Quadrant3:
+            v1Angle = Math.atan(-ball1.Vy / -ball1.Vx);
+            angleBetween = vnAngle + v1Angle;
+            break;
+          case v1Quadrant2:
+            v1Angle = Math.atan(ball1.Vy / -ball1.Vx);
+            angleBetween = Math.abs(vnAngle - v1Angle);
+            break;
+          case v1Quadrant1:
+            v1Angle = Math.atan(ball1.Vx / ball1.Vy);
+            angleBetween = Math.PI / 2 - vnAngle + v1Angle;
+            break;
+        }
+        break;
+      case vnQuadrant1:
+        signalX = 1;
+        signalY = 1;
+        vnAngle = Math.atan(
+          (ball2.posY - ball1.posY) / (ball2.posX - ball1.posX)
+        );
+        switch (true) {
+          case v1Quadrant4:
+            v1Angle = Math.atan(-ball1.Vy / ball1.Vx);
+            angleBetween = vnAngle + v1Angle;
+            break;
+          case v1Quadrant1:
+            v1Angle = Math.atan(ball1.Vy / ball1.Vx);
+            angleBetween = Math.abs(vnAngle - v1Angle);
+            break;
+          case v1Quadrant2:
+            v1Angle = Math.atan(-ball1.Vx / ball1.Vy);
+            angleBetween = 90 - vnAngle + v1Angle;
+            break;
+        }
+        break;
+    }
+    let normalVelocityModulus =
+      (v1Modulus * Math.cos(angleBetween)) / colidedBalls;
+    let Vnx = normalVelocityModulus * Math.cos(vnAngle) * signalX;
+    let Vny = normalVelocityModulus * Math.sin(vnAngle) * signalY;
+    let Vtx = ball1.Vx - Vnx;
+    let Vty = ball1.Vy - Vny;
+    ball2.Vx += Vnx;
+    ball2.Vy += Vny;
+    ball1.Vx = Vtx;
+    ball1.Vy = Vty;
+  }
+  checkBallsColision() {
+    //ARRUMAR
+    this.balls.forEach((ball1) => {
+      let colidingBalls = [];
+      this.balls.forEach((ball2) => {
+        if (ball2.canReceiveVelocity) {
+          let distance = Math.sqrt(
+            (ball2.posX - ball1.posX) ** 2 + (ball2.posY - ball1.posY) ** 2
+          );
+          if (distance < 2 * ball1.radius && distance > 0) {
+            colidingBalls.push(ball2);
+            ball2.canReceiveVelocity = false;
+          }
+        }
+      });
+      colidingBalls.forEach((ball2) => {
+        this.transferVelocity(ball1, ball2, colidingBalls.length);
+      });
+    });
+    this.balls.forEach((ball) => (ball.canReceiveVelocity = true));
+    //ARRUMAR
+  }
   startGame() {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.createSnookerTable();
@@ -178,6 +345,8 @@ class Game {
     this.renderBalls();
     this.checkColisionBallPoolCue();
     this.checkWallColision();
+    this.checkIfBallSinked();
+    this.checkBallsColision();
     this.moveBalls();
     this.animationID = requestAnimationFrame(() => this.startGame());
   }

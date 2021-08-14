@@ -147,6 +147,7 @@ class Balls extends Holes {
     this.Vx = 0;
     this.Vy = 0;
     this.movingFriction = 0.97;
+    this.canReceiveVelocity = true;
   }
   move() {
     this.posX += this.Vx;
