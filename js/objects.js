@@ -57,7 +57,7 @@ class PoolCue extends Objects {
     this.width = width;
     this.rotationAngle = rotationAngle;
     this.walkVelocity = 5;
-    this.colisible = false;
+    this.colisable = false;
     this.Vx = 0;
     this.Vy = 0;
     this.power = 0;
@@ -78,7 +78,7 @@ class PoolCue extends Objects {
     this.context.restore();
   }
   loadShot() {
-    if (this.power < 100) {
+    if (this.power < 40) {
       let cossin = Math.cos((Math.PI / 180) * this.rotationAngle);
       let sin = Math.sin((Math.PI / 180) * this.rotationAngle);
       if (this.power === 0) {
@@ -91,13 +91,13 @@ class PoolCue extends Objects {
   }
   shot(event) {
     if (event.key === " ") {
-      this.colisible = true;
+      this.colisable = true;
       this.Vx = this.power * -Math.cos((Math.PI / 180) * this.rotationAngle);
       this.Vy = this.power * -Math.sin((Math.PI / 180) * this.rotationAngle);
       this.power = 0;
       this.posX = this.limitPosition[0];
       this.posY = this.limitPosition[1];
-      setTimeout(() => (this.colisible = false), 500);
+      setTimeout(() => (this.colisable = false), 500);
     }
   }
   move(event) {
@@ -147,15 +147,21 @@ class Balls extends Holes {
     this.Vx = 0;
     this.Vy = 0;
     this.movingFriction = 0.97;
-    this.canReceiveVelocity = true;
+    this.colisable = true;
   }
   move() {
     this.posX += this.Vx;
     this.posY += this.Vy;
     this.Vx *= this.movingFriction;
     this.Vy *= this.movingFriction;
+    if (Math.abs(this.Vx) < 0.1) {
+      this.Vx = 0;
+    }
+    if (Math.abs(this.Vy) < 0.1) {
+      this.Vy = 0;
+    }
   }
-  colision(velocityX, velocityY) {
+  poolCueCollision(velocityX, velocityY) {
     this.Vx += velocityX;
     this.Vy += velocityY;
   }
