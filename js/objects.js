@@ -86,7 +86,7 @@ class PoolCue extends Objects {
       }
       this.posX += cossin;
       this.posY += sin;
-      this.power++;
+      this.power += 1;
     }
   }
   shot(event) {

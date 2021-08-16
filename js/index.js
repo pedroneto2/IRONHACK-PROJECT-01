@@ -130,22 +130,9 @@ class Game {
     }
   }
   moveBalls() {
-    this.balls.forEach((ball, index) => {
-      if (ball.Vx !== 0 || ball.Vy !== 0) {
-        this.balls.forEach((ball2, index2) => {
-          if (index !== index2) {
-            let distanceOnNextMove = Math.sqrt(
-              (ball2.posX + ball2.Vx - (ball.posX + ball.Vx)) ** 2 +
-                (ball2.posY + ball2.Vy - (ball.posY + ball.Vy)) ** 2
-            );
-            if (distanceOnNextMove < 2 * ball.radius) {
-            }
-          }
-        });
-      }
-      ball.move();
-    });
+    this.balls.forEach((ball) => ball.move());
   }
+  //ARRUMA=============================
   checkWallColision() {
     let r = this.ballsRadius;
     let radProj = r * 0.70710678; // modulus of 45 degrees radius projection on axis x or y
@@ -347,6 +334,40 @@ class Game {
     });
     this.balls.forEach((ball) => (ball.colisable = true));
   }
+  regressPosition(ball, ball2) {
+    //regress ball position until it is located at ball boundary, where collision occurs
+    let distance = Math.sqrt(
+      (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
+    );
+    if (distance >= 2 * (ball.radius - 2) && distance <= 2 * ball.radius) {
+      return;
+    }
+    if (distance < 2 * (ball.radius - 2)) {
+      ball.posX -= ball.Vx * 0.25;
+      ball.posY -= ball.Vy * 0.25;
+    }
+    if (distance > 2 * ball.radius) {
+      ball.posX += ball.Vx * 0.1;
+      ball.posY += ball.Vy * 0.1;
+    }
+    this.regressPosition(ball, ball2);
+  }
+  fixOverLapping() {
+    this.balls.forEach((ball, index) => {
+      this.balls.forEach((ball2, index2) => {
+        if (index !== index2) {
+          if (ball.Vx !== 0 || ball.Vy !== 0) {
+            let distance = Math.sqrt(
+              (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
+            );
+            if (distance < 2 * (ball.radius - 2)) {
+              this.regressPosition(ball, ball2);
+            }
+          }
+        }
+      });
+    });
+  }
   startGame() {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.createSnookerTable();
@@ -356,6 +377,7 @@ class Game {
     this.checkWallColision();
     this.checkIfBallSinked();
     this.moveBalls();
+    this.fixOverLapping();
     this.poolCue.draw();
     this.animationID = requestAnimationFrame(() => this.startGame());
   }
