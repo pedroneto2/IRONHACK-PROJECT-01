@@ -303,13 +303,31 @@ class Game {
       });
     });
   }
+  retrieveVelocityAngle(ball1) {
+    let v1Quadrant4 = ball1.Vx > 0 && ball1.Vy <= 0;
+    let v1Quadrant3 = ball1.Vx <= 0 && ball1.Vy < 0;
+    let v1Quadrant2 = ball1.Vx < 0 && ball1.Vy >= 0;
+    let v1Quadrant1 = ball1.Vx >= 0 && ball1.Vy > 0;
+    let v1Angle;
+    switch (true) {
+      case v1Quadrant4:
+        v1Angle = Math.atan(Math.abs(ball1.Vx / ball1.Vy)) + (3 * Math.PI) / 2;
+        break;
+      case v1Quadrant3:
+        v1Angle = Math.atan(Math.abs(ball1.Vy / ball1.Vx)) + Math.PI;
+        break;
+      case v1Quadrant2:
+        v1Angle = Math.atan(Math.abs(ball1.Vx / ball1.Vy)) + Math.PI / 2;
+        break;
+      case v1Quadrant1:
+        v1Angle = Math.atan(Math.abs(ball1.Vy / ball1.Vx));
+        break;
+    }
+    return v1Angle;
+  }
   transferVelocity(ball1, ball2, ball1Vx, ball1Vy, index) {
     let v1Modulus = Math.sqrt(ball1Vx ** 2 + ball1Vy ** 2);
     let vnAngle, v1Angle, angleBetween;
-    let v1Quadrant4 = ball1Vx > 0 && ball1Vy <= 0;
-    let v1Quadrant3 = ball1Vx <= 0 && ball1Vy < 0;
-    let v1Quadrant2 = ball1Vx < 0 && ball1Vy >= 0;
-    let v1Quadrant1 = ball1Vx >= 0 && ball1Vy > 0;
     let vnQuadrant4 = ball2.posX > ball1.posX && ball2.posY <= ball1.posY;
     let vnQuadrant3 = ball2.posX <= ball1.posX && ball2.posY < ball1.posY;
     let vnQuadrant2 = ball2.posX < ball1.posX && ball2.posY >= ball1.posY;
@@ -336,20 +354,7 @@ class Game {
         );
         break;
     }
-    switch (true) {
-      case v1Quadrant4:
-        v1Angle = Math.atan(Math.abs(ball1Vx / ball1Vy)) + (3 * Math.PI) / 2;
-        break;
-      case v1Quadrant3:
-        v1Angle = Math.atan(Math.abs(ball1Vy / ball1Vx)) + Math.PI;
-        break;
-      case v1Quadrant2:
-        v1Angle = Math.atan(Math.abs(ball1Vx / ball1Vy)) + Math.PI / 2;
-        break;
-      case v1Quadrant1:
-        v1Angle = Math.atan(Math.abs(ball1Vy / ball1Vx));
-        break;
-    }
+    v1Angle = this.retrieveVelocityAngle(ball1);
     angleBetween = Math.abs(vnAngle - v1Angle);
     let normalVelocityModulus = v1Modulus * Math.cos(angleBetween);
     let Vnx = normalVelocityModulus * Math.cos(vnAngle);
@@ -395,35 +400,37 @@ class Game {
     });
     this.balls.forEach((ball) => (ball.colisable = true));
   }
-  regressPosition(ball, ball2) {
+  regressPosition(ball1, ball2, counter = 1) {
     //regress ball position until it is located at ball boundary, where collision occurs
     let distance = Math.sqrt(
-      (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
+      (ball2.posX - ball1.posX) ** 2 + (ball2.posY - ball1.posY) ** 2
     );
-    if (distance >= 2 * (ball.radius - 0.5) && distance <= 2 * ball.radius) {
+    if (distance >= 2 * (ball1.radius - 0.1) && distance <= 2 * ball1.radius) {
       return;
     }
-    let ballShell = Math.abs(distance - 2 * ball.radius);
-    if (distance < 2 * (ball.radius - 0.5)) {
-      ball.posX -= ball.Vx * 0.05;
-      ball.posY -= ball.Vy * 0.05;
+    let overLapping = Math.abs(2 * ball1.radius - distance);
+    let angle = this.retrieveVelocityAngle(ball1);
+    if (distance < 2 * (ball1.radius - 0.1)) {
+      ball1.posX -= overLapping * Math.cos(angle) * 0.999;
+      ball1.posY -= overLapping * Math.sin(angle) * 0.999;
     }
-    if (distance > 2 * ball.radius) {
-      ball.posX += ball.Vx * 0.02;
-      ball.posY += ball.Vy * 0.02;
+    if (distance > 2 * ball1.radius) {
+      //this is just a safety-secure code but probably it will never be trigged
+      ball1.posX += overLapping * Math.cos(angle) * 0.999;
+      ball1.posY += overLapping * Math.sin(angle) * 0.999;
     }
-    this.regressPosition(ball, ball2);
+    this.regressPosition(ball1, ball2, counter++);
   }
   fixOverLapping() {
-    this.balls.forEach((ball, index) => {
+    this.balls.forEach((ball1, index) => {
       this.balls.forEach((ball2, index2) => {
         if (index !== index2) {
-          if (ball.Vx !== 0 || ball.Vy !== 0) {
+          if (ball1.Vx !== 0 || ball1.Vy !== 0) {
             let distance = Math.sqrt(
-              (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
+              (ball2.posX - ball1.posX) ** 2 + (ball2.posY - ball1.posY) ** 2
             );
-            if (distance < 2 * (ball.radius - 0.5)) {
-              this.regressPosition(ball, ball2);
+            if (distance < 2 * (ball1.radius - 0.1)) {
+              this.regressPosition(ball1, ball2);
             }
           }
         }
@@ -464,13 +471,14 @@ window.onload = () => {
     musicState = true;
     ambientState = true;
     startButton.style = "transform: translateX(-1500px)";
-    setTimeout(() => clickButton(), 1000);
+    setTimeout(() => clickButton(), 300);
   };
 };
 // W I N D O W . O N L O A D ========================
 
-function clickButton() {
+function clickButton() {  
   music.play();
+  music.loop = true
   startButton.style = "display:none";
   canvas = document.querySelector("#canvas");
   canvas.style = "background-image:none";
