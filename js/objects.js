@@ -154,6 +154,7 @@ class PoolCue extends Objects {
         this.rotationAngle -= this.walkVelocity;
         break;
       case " ":
+        event.preventDefault();
         this.loadShot();
         break;
     }
