@@ -1,25 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+div {
+  display: flex;
+  justify-content: space-around;
+}
+
 #button {
-  margin: 112px auto auto 350px;
-  width: 750px;
-  height: 400px;
-  font-size: 100px;
+  margin-top: 40px;
+  margin-left: -450px;
+  width: 1350px;
+  height: 790px;
+  background-image: url("../images/wooden-texture.jpeg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   border: none;
-  color: rgba(25, 25, 25, 0.9);
-  box-shadow: 20px 20px 5px rgba(25, 25, 25, 0.9);
+  box-shadow: 10px 10px 2px rgba(25, 25, 25, 0.9);
   cursor: pointer;
-  display: none;
+  position: absolute;
+  transition-duration: 1s;
 }
 
-#button:active {
-  box-shadow: 10px 10px 5px rgba(25, 25, 25, 0.9);
+#button:hover {
+  transform: translateX(-300px);
+  transition-duration: 1s;
+}
+
+#game-presentation {
+  display: none;
+  position: absolute;
+}
+
+#game img {
+  width: 300px;
+}
+
+#music {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 25px;
+  display: none;
+  color: rgb(16, 71, 64);
+  font-weight: bold;
+}
+
+#ambient {
+  text-align: center;
+  cursor: pointer;
+  font-size: 25px;
+  display: none;
+  color: rgb(116, 48, 9);
+  font-weight: bold;
+}
+
+p::selection {
+  background: transparent;
+}
+
+p:active {
+  text-shadow: 0px 0px 2px rgba(25, 25, 25, 0.9);
 }
 
 #canvas {
-  display: none;
-  margin: 50px;
+  margin-left: 0;
+  margin-top: 25px;
   background-color: #289e47;
-  border: 50px solid #6e3e0b;
+  background-image: url("../images/table-back-ground.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border: 40px solid #6e3e0b;
 }

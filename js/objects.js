@@ -68,13 +68,28 @@ class PoolCue extends Objects {
     this.context.fillStyle = "#8a2500";
     this.context.translate(this.posX, this.posY);
     this.context.rotate((Math.PI / 180) * this.rotationAngle);
-    this.context.fillRect(0, -this.height / 2, 10, this.height);
+    this.context.fillRect(0, -this.height / 2, this.width / 60, this.height);
     this.context.fillStyle = "#ffffff";
-    this.context.fillRect(10, -this.height / 2, 30, this.height);
+    this.context.fillRect(
+      this.width / 60,
+      -this.height / 2,
+      this.width / 20,
+      this.height
+    );
     this.context.fillStyle = "#f2cf96";
-    this.context.fillRect(30, -this.height / 2, this.width - 240, this.height);
+    this.context.fillRect(
+      this.width / 20,
+      -this.height / 2,
+      this.width - this.width / 2.5,
+      this.height
+    );
     this.context.fillStyle = "#1b0d42";
-    this.context.fillRect(this.width - 240, -this.height / 2, 200, this.height);
+    this.context.fillRect(
+      this.width - this.width / 2.5,
+      -this.height / 2,
+      this.width / 3,
+      this.height
+    );
     this.context.restore();
   }
   loadShot() {

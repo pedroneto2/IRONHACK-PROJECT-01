@@ -1,16 +1,20 @@
 const startButton = document.querySelector("#button");
+const poolCueHit = new Audio("./audio/poolCueHit.wav");
+const ballSinking = new Audio("./audio/sinking.wav");
+const music = new Audio("./audio/music.mp3");
+const wallHit = new Audio("./audio/ballHitsWall.wav");
+const ballHit = new Audio("./audio/ballHit.wav");
 
 class Game {
-  constructor(canvas, startButton, context) {
-    this.startButton = startButton;
+  constructor(canvas, context) {
     this.canvas = canvas;
     this.context = context;
     this.holes = [];
-    this.holesRadius = 25;
-    this.ballsRadius = 20;
+    this.holesRadius = canvas.height / 30;
+    this.ballsRadius = canvas.height / 37.5;
     this.walls = [];
-    this.poolCueWidth = 600;
-    this.poolCueHeight = 10;
+    this.poolCueWidth = canvas.height / 1.25;
+    this.poolCueHeight = canvas.height / 75;
     this.poolCue = undefined;
     this.balls = [];
     this.ballColors = [
@@ -125,6 +129,7 @@ class Game {
         let distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
         if (distance <= ball.radius) {
           ball.poolCueCollision(this.poolCue.Vx, this.poolCue.Vy);
+          poolCueHit.play();
         }
       });
     }
@@ -148,67 +153,115 @@ class Game {
           case 0: //====-up walls-====
             if (ballY - r < y + h && ballX >= x + h && ballX <= x + w - h) {
               // STRAIGHT WALLS
-              ball.Vy *= -1;
+              if (ball.Vy < 0) {
+                ball.Vy *= -1;
+              }
+              ballY = y - h + r + 1; //avoid ball overlapping wall
+              let sound = wallHit.cloneNode(false);
+              sound.volume = wallHit.volume;
+              sound.play();
             } else if (ballX < x + h && ballX > x) {
               // inclined walls
               if (ballY - radProj < y + h - (x + h - (ballX + radProj))) {
                 // directs to left
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             } else if (ballX > x + w - h && ballX < x + w) {
               // inclined walls
               if (ballY - radProj < y + h - (ballX - radProj - (x + w - h))) {
                 // directs to right
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             }
             break;
           case 90: // ====-right wall-====
             if (ballX + r > x - h && ballY >= y + h && ballY <= y + w - h) {
               // STRAIGHT WALLS
-              ball.Vx *= -1;
+              if (ball.Vx > 0) {
+                ball.Vx *= -1;
+              }
+              ballY = x - h - r - 1; //avoid ball overlapping wall
+              let sound = wallHit.cloneNode(false);
+              sound.volume = wallHit.volume;
+              sound.play();
             } else if (ballY < y + h && ballY > y) {
               if (ballX + radProj > x - h + (y + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             } else if (ballY > y + w - h && ballY < y + w) {
               if (ballX + radProj > x - h + (ballY - radProj - (y + w - h))) {
                 //directs to down
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             }
             break;
           case 180: //====-down walls-=====
             if (ballY + r > y - h && ballX >= x - w + h && ballX <= x - h) {
               // STRAIGHT WALLS
-              ball.Vy *= -1;
+              if (ball.Vy > 0) {
+                ball.Vy *= -1;
+              }
+              ballY = y - h - r - 1; //avoid ball overlapping wall
+              let sound = wallHit.cloneNode(false);
+              sound.volume = wallHit.volume;
+              sound.play();
             } else if (ballX < x && ballX > x - h) {
               // inclined walls
               if (ballY + radProj > y - h + (ballX - radProj - (x - h))) {
                 //directs to right
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             } else if (ballX > x - w && ballX < x - w + h) {
               if (ballY + radProj > y - h + (x - w + h - (ballX + radProj))) {
                 //directs to left
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             }
             break;
           case -90: // ====-left wall-====
             if (ballX - r < x + h && ballY >= y - w + h && ballY <= y - h) {
               // STRAIGHT WALLS
-              ball.Vx *= -1;
+              if (ball.Vx < 0) {
+                ball.Vx *= -1;
+              }
+              ballX = x + h + r + 1; //avoid ball overlapping wall
+              let sound = wallHit.cloneNode(false);
+              sound.volume = wallHit.volume;
+              sound.play();
             } else if (ballY > y - w && ballY < y - w + h) {
               if (ballX - radProj < x + h - (y - w + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             } else if (ballY > y - h && ballY < y) {
               if (ballX - radProj < x + h - (ballY - radProj - (y - h))) {
                 //directs down
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                let sound = wallHit.cloneNode(false);
+                sound.volume = wallHit.volume;
+                sound.play();
               }
             }
             break;
@@ -227,6 +280,9 @@ class Game {
         );
         if (distanceBallHole <= hole.radius) {
           this.balls.splice(indice, 1);
+          let sound = ballSinking.cloneNode(false);
+          sound.volume = ballSinking.volume;
+          sound.play();
           if (ball.color === color1) {
             console.log("White ball sinked, you lose point!");
             //check if there is free space to insert white ball again if it was sinked
@@ -328,6 +384,11 @@ class Game {
         let dividedVy = ball1.Vy / ballsCollidingWithBall1.length;
         ballsCollidingWithBall1.forEach((ball2, index3) => {
           this.transferVelocity(ball1, ball2, dividedVx, dividedVy, index3);
+          if (index3 === 0) {
+            let sound = ballHit.cloneNode(false);
+            sound.volume = ballHit.volume;
+            sound.play();
+          }
         });
         ball1.colisable = false;
       }
@@ -339,16 +400,17 @@ class Game {
     let distance = Math.sqrt(
       (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
     );
-    if (distance >= 2 * (ball.radius - 2) && distance <= 2 * ball.radius) {
+    if (distance >= 2 * (ball.radius - 0.5) && distance <= 2 * ball.radius) {
       return;
     }
-    if (distance < 2 * (ball.radius - 2)) {
-      ball.posX -= ball.Vx * 0.25;
-      ball.posY -= ball.Vy * 0.25;
+    let ballShell = Math.abs(distance - 2 * ball.radius);
+    if (distance < 2 * (ball.radius - 0.5)) {
+      ball.posX -= ball.Vx * 0.05;
+      ball.posY -= ball.Vy * 0.05;
     }
     if (distance > 2 * ball.radius) {
-      ball.posX += ball.Vx * 0.1;
-      ball.posY += ball.Vy * 0.1;
+      ball.posX += ball.Vx * 0.02;
+      ball.posY += ball.Vy * 0.02;
     }
     this.regressPosition(ball, ball2);
   }
@@ -360,7 +422,7 @@ class Game {
             let distance = Math.sqrt(
               (ball2.posX - ball.posX) ** 2 + (ball2.posY - ball.posY) ** 2
             );
-            if (distance < 2 * (ball.radius - 2)) {
+            if (distance < 2 * (ball.radius - 0.5)) {
               this.regressPosition(ball, ball2);
             }
           }
@@ -386,19 +448,108 @@ class Game {
 window.onload = () => {
   startButton.style = "display:block";
   startButton.onclick = () => {
-    startButton.style = "display:hidden";
-    canvas = document.querySelector("#canvas");
-    canvas.style = "display:block";
-    context = canvas.getContext("2d");
-    game = new Game(canvas, startButton, context);
-    game.createHoles();
-    game.createWalls();
-    game.createPoolCue();
-    game.insertWhiteBall();
-    game.insertBalls();
-    game.startGame();
-    window.addEventListener("keydown", (event) => game.poolCue.move(event));
-    window.addEventListener("keyup", (event) => game.poolCue.shot(event));
+    increaseVol = document.querySelector("#increase");
+    decreaseVol = document.querySelector("#decrease");
+    musicButton = document.querySelector("#mute");
+    increaseAmbientButton = document.querySelector("#increaseAmbient");
+    decreaseAmbientButton = document.querySelector("#decreaseAmbient");
+    ambientButton = document.querySelector("#muteAmbient");
+    ambientContainer = document.querySelector("#ambient");
+    musicContainer = document.querySelector("#music");
+    music.volume = 0.1;
+    poolCueHit.volume = 0.5;
+    ballHit.volume = 0.5;
+    ballSinking.volume = 0.5;
+    wallHit.volume = 0.5;
+    musicState = true;
+    ambientState = true;
+    startButton.style = "transform: translateX(-1500px)";
+    setTimeout(() => clickButton(), 1000);
   };
 };
 // W I N D O W . O N L O A D ========================
+
+function clickButton() {
+  music.play();
+  startButton.style = "display:none";
+  canvas = document.querySelector("#canvas");
+  canvas.style = "background-image:none";
+  ambientContainer.style = "display:flex";
+  musicContainer.style = "display:flex";
+  context = canvas.getContext("2d");
+  game = new Game(canvas, context);
+  game.createHoles();
+  game.createWalls();
+  game.createPoolCue();
+  game.insertWhiteBall();
+  game.insertBalls();
+  game.startGame();
+  window.addEventListener("keydown", (event) => game.poolCue.move(event));
+  window.addEventListener("keyup", (event) => game.poolCue.shot(event));
+  musicButton.addEventListener("click", () => musicStatus());
+  increaseVol.addEventListener("click", () => increaseMusic());
+  decreaseVol.addEventListener("click", () => decreaseMusic());
+  ambientButton.addEventListener("click", () => ambientStatus());
+  increaseAmbientButton.addEventListener("click", () => increaseAmbient());
+  decreaseAmbientButton.addEventListener("click", () => decreaseAmbient());
+}
+
+function musicStatus() {
+  if (musicState) {
+    music.pause();
+    musicButton.innerHTML = "Play Music";
+    musicState = false;
+  } else {
+    music.play();
+    musicButton.innerHTML = "Mute Music";
+    musicState = true;
+  }
+}
+
+function increaseMusic() {
+  if (music.volume < 0.95) {
+    music.volume += 0.05;
+  }
+}
+
+function decreaseMusic() {
+  if (music.volume > 0.05) {
+    music.volume -= 0.05;
+  }
+}
+
+function ambientStatus() {
+  if (ambientState) {
+    poolCueHit.volume = 0;
+    ballHit.volume = 0;
+    ballSinking.volume = 0;
+    wallHit.volume = 0;
+    ambientButton.innerHTML = "Play Ambient";
+    ambientState = false;
+  } else {
+    poolCueHit.volume = 0.5;
+    ballHit.volume = 0.5;
+    ballSinking.volume = 0.5;
+    wallHit.volume = 0.5;
+    ambientButton.innerHTML = "Mute Ambient";
+    ambientState = true;
+  }
+}
+
+function increaseAmbient() {
+  if (poolCueHit.volume < 0.95) {
+    poolCueHit.volume += 0.05;
+    ballHit.volume += 0.05;
+    ballSinking.volume += 0.05;
+    wallHit.volume += 0.05;
+  }
+}
+
+function decreaseAmbient() {
+  if (poolCueHit.volume > 0.05) {
+    poolCueHit.volume -= 0.05;
+    ballHit.volume -= 0.05;
+    ballSinking.volume -= 0.05;
+    wallHit.volume -= 0.05;
+  }
+}
