@@ -3,16 +3,20 @@
   padding: 0;
 }
 
-div {
+#container,
+#music,
+#ambient {
   display: flex;
   justify-content: space-around;
+  margin-top: 15px;
+  width: 1800px;
 }
 
 #button {
-  margin-top: 40px;
-  margin-left: -450px;
+  margin-top: 20px;
+  margin-left: -400px;
   width: 1350px;
-  height: 790px;
+  height: 730px;
   background-image: url("../images/wooden-texture.jpeg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -29,13 +33,8 @@ div {
   transition-duration: 1s;
 }
 
-#game-presentation {
-  display: none;
-  position: absolute;
-}
-
-#game img {
-  width: 300px;
+#container > img {
+  height: 750px;
 }
 
 #music {
@@ -67,8 +66,6 @@ p:active {
 }
 
 #canvas {
-  margin-left: 0;
-  margin-top: 25px;
   background-color: #289e47;
   background-image: url("../images/table-back-ground.png");
   background-repeat: no-repeat;

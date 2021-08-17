@@ -118,15 +118,19 @@ class PoolCue extends Objects {
   move(event) {
     switch (event.key) {
       case "ArrowLeft":
+        event.preventDefault(); // prevents scrolling
         this.posX -= this.walkVelocity;
         break;
       case "ArrowRight":
+        event.preventDefault();
         this.posX += this.walkVelocity;
         break;
       case "ArrowUp":
+        event.preventDefault();
         this.posY -= this.walkVelocity;
         break;
       case "ArrowDown":
+        event.preventDefault();
         this.posY += this.walkVelocity;
         break;
       case "+":

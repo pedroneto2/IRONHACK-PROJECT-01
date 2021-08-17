@@ -140,7 +140,7 @@ class Game {
   //ARRUMA=============================
   checkWallColision() {
     let r = this.ballsRadius;
-    let radProj = r * 0.70710678; // modulus of 45 degrees radius projection on axis x or y
+    let radProj = r * Math.cos(Math.PI / 4); // modulus of 45 degrees radius projection on axis x or y
     this.balls.forEach((ball) => {
       let ballX = ball.posX;
       let ballY = ball.posY;
@@ -156,7 +156,7 @@ class Game {
               if (ball.Vy < 0) {
                 ball.Vy *= -1;
               }
-              ballY = y - h + r + 1; //avoid ball overlapping wall
+              ball.posY = y + h + r + 1; //avoid ball overlapping wall
               let sound = wallHit.cloneNode(false);
               sound.volume = wallHit.volume;
               sound.play();
@@ -186,7 +186,7 @@ class Game {
               if (ball.Vx > 0) {
                 ball.Vx *= -1;
               }
-              ballY = x - h - r - 1; //avoid ball overlapping wall
+              ball.posX = x - h - r - 1; //avoid ball overlapping wall
               let sound = wallHit.cloneNode(false);
               sound.volume = wallHit.volume;
               sound.play();
@@ -214,7 +214,7 @@ class Game {
               if (ball.Vy > 0) {
                 ball.Vy *= -1;
               }
-              ballY = y - h - r - 1; //avoid ball overlapping wall
+              ball.posY = y - h - r - 1; //avoid ball overlapping wall
               let sound = wallHit.cloneNode(false);
               sound.volume = wallHit.volume;
               sound.play();
@@ -243,7 +243,7 @@ class Game {
               if (ball.Vx < 0) {
                 ball.Vx *= -1;
               }
-              ballX = x + h + r + 1; //avoid ball overlapping wall
+              ball.posX = x + h + r + 1; //avoid ball overlapping wall
               let sound = wallHit.cloneNode(false);
               sound.volume = wallHit.volume;
               sound.play();
@@ -380,7 +380,10 @@ class Game {
             let distance = Math.sqrt(
               (ball2.posX - ball1.posX) ** 2 + (ball2.posY - ball1.posY) ** 2
             );
-            if (distance <= 2 * ball2.radius) {
+            if (
+              distance <= 2 * ball2.radius &&
+              distance >= 2 * (ball2.radius - 0.1)
+            ) {
               ballsCollidingWithBall1.push(ball2);
             }
           }
@@ -476,9 +479,9 @@ window.onload = () => {
 };
 // W I N D O W . O N L O A D ========================
 
-function clickButton() {  
+function clickButton() {
   music.play();
-  music.loop = true
+  music.loop = true;
   startButton.style = "display:none";
   canvas = document.querySelector("#canvas");
   canvas.style = "background-image:none";
