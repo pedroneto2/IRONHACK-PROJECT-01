@@ -31,4 +31,4 @@ The file 'ballCollisionPhysics.jpeg' explain the phyics I used for ball collisio
 The file 'ballColisionScheme.jpg' is a failed scheme I tried to use for ball collisions at beginning of coding,
 but it helped me to understand how to get the right angles and vectors I used later
 
-*I did this project during my Ironhack bootcamp, module 01
+* I did this project during my Ironhack bootcamp, module 01
