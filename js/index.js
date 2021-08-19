@@ -5,8 +5,20 @@ const music = new Audio("./audio/music.mp3");
 const wallHit = new Audio("./audio/ballHitsWall.wav");
 const ballHit = new Audio("./audio/ballHit.wav");
 
+const audioPack = {
+  poolCueHit: poolCueHit,
+  ballSinking: ballSinking,
+  wallHit: wallHit,
+  ballHit: ballHit,
+};
+
 class Game {
-  constructor(canvas, context) {
+  constructor(canvas, context, Balls, Walls, Holes, PoolCue, audioPack) {
+    this.audioPack = audioPack;
+    this.Balls = Balls;
+    this.Walls = Walls;
+    this.Holes = Holes;
+    this.PoolCue = PoolCue;
     this.canvas = canvas;
     this.context = context;
     this.holes = [];
@@ -40,17 +52,17 @@ class Game {
     let d = this.holesRadius * 2;
     let h = this.canvas.height;
     let w = this.canvas.width;
-    this.walls.push(new Walls(context, d, 0, d, w / 2 - (3 * d) / 2, 0)); // up left
+    this.walls.push(new this.Walls(context, d, 0, d, w / 2 - (3 * d) / 2, 0)); // up left
     this.walls.push(
-      new Walls(context, d / 2 + w / 2, 0, d, w / 2 - (3 * d) / 2, 0) // up right
+      new this.Walls(context, d / 2 + w / 2, 0, d, w / 2 - (3 * d) / 2, 0) // up right
     );
-    this.walls.push(new Walls(context, 0, h - d, d, h - 2 * d, -90)); //left
-    this.walls.push(new Walls(context, w, d, d, h - 2 * d, 90)); // right
+    this.walls.push(new this.Walls(context, 0, h - d, d, h - 2 * d, -90)); //left
+    this.walls.push(new this.Walls(context, w, d, d, h - 2 * d, 90)); // right
     this.walls.push(
-      new Walls(context, w / 2 - d / 2, h, d, w / 2 - (3 * d) / 2, 180) // down left
+      new this.Walls(context, w / 2 - d / 2, h, d, w / 2 - (3 * d) / 2, 180) // down left
     );
     this.walls.push(
-      new Walls(context, w - d, h, d, w / 2 - (3 * d) / 2, 180) // down left
+      new this.Walls(context, w - d, h, d, w / 2 - (3 * d) / 2, 180) // down left
     );
   }
   createHoles() {
@@ -58,19 +70,19 @@ class Game {
     let h = this.canvas.height;
     let w = this.canvas.width;
     let color = "black";
-    this.holes.push(new Holes(context, r, r, r, color)); //up left
-    this.holes.push(new Holes(context, w / 2, r, r, color)); //up middle
-    this.holes.push(new Holes(context, w - r, r, r, color)); // up right
-    this.holes.push(new Holes(context, r, h - r, r, color)); //down left
-    this.holes.push(new Holes(context, w / 2, h - r, r, color)); //down middle
-    this.holes.push(new Holes(context, w - r, h - r, r, color)); //down right
+    this.holes.push(new this.Holes(context, w / 2, r, r, color)); //up middle
+    this.holes.push(new this.Holes(context, r, r, r, color)); //up left
+    this.holes.push(new this.Holes(context, w - r, r, r, color)); // up right
+    this.holes.push(new this.Holes(context, r, h - r, r, color)); //down left
+    this.holes.push(new this.Holes(context, w / 2, h - r, r, color)); //down middle
+    this.holes.push(new this.Holes(context, w - r, h - r, r, color)); //down right
   }
   createSnookerTable() {
     this.holes.forEach((hole) => hole.draw());
     this.walls.forEach((wall) => wall.drawWall());
   }
   createPoolCue() {
-    this.poolCue = new PoolCue(
+    this.poolCue = new this.PoolCue(
       this.context,
       this.canvas.width / 2,
       this.canvas.height / 3,
@@ -92,7 +104,13 @@ class Game {
           posY = initialPosY;
         }
         this.balls.push(
-          new Balls(this.context, initialPosX, posY, this.ballsRadius, color)
+          new this.Balls(
+            this.context,
+            initialPosX,
+            posY,
+            this.ballsRadius,
+            color
+          )
         );
         if (ballsperQueue < queue) {
           posY += 2 * this.ballsRadius + 2;
@@ -109,7 +127,7 @@ class Game {
   insertWhiteBall() {
     let whiteBall = "white";
     this.balls.push(
-      new Balls(
+      new this.Balls(
         this.context,
         (4 * this.canvas.width) / 5,
         this.canvas.height / 2,
@@ -129,7 +147,9 @@ class Game {
         let distance = Math.sqrt(distanceX ** 2 + distanceY ** 2);
         if (distance <= ball.radius) {
           ball.poolCueCollision(this.poolCue.Vx, this.poolCue.Vy);
-          poolCueHit.play();
+          if (audioPack.poolCueHit) {
+            audioPack.poolCueHit.play();
+          }
         }
       });
     }
@@ -137,7 +157,6 @@ class Game {
   moveBalls() {
     this.balls.forEach((ball) => ball.move());
   }
-  //ARRUMA=============================
   checkWallColision() {
     let r = this.ballsRadius;
     let radProj = r * Math.cos(Math.PI / 4); // modulus of 45 degrees radius projection on axis x or y
@@ -157,26 +176,32 @@ class Game {
                 ball.Vy *= -1;
               }
               ball.posY = y + h + r + 1; //avoid ball overlapping wall
-              let sound = wallHit.cloneNode(false);
-              sound.volume = wallHit.volume;
-              sound.play();
+              if (audioPack.wallHit) {
+                let sound = audioPack.wallHit.cloneNode(false);
+                sound.volume = audioPack.wallHit.volume;
+                sound.play();
+              }
             } else if (ballX < x + h && ballX > x) {
               // inclined walls
               if (ballY - radProj < y + h - (x + h - (ballX + radProj))) {
                 // directs to left
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             } else if (ballX > x + w - h && ballX < x + w) {
               // inclined walls
               if (ballY - radProj < y + h - (ballX - radProj - (x + w - h))) {
                 // directs to right
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             }
             break;
@@ -187,24 +212,30 @@ class Game {
                 ball.Vx *= -1;
               }
               ball.posX = x - h - r - 1; //avoid ball overlapping wall
-              let sound = wallHit.cloneNode(false);
-              sound.volume = wallHit.volume;
-              sound.play();
+              if (audioPack.wallHit) {
+                let sound = audioPack.wallHit.cloneNode(false);
+                sound.volume = audioPack.wallHit.volume;
+                sound.play();
+              }
             } else if (ballY < y + h && ballY > y) {
               if (ballX + radProj > x - h + (y + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             } else if (ballY > y + w - h && ballY < y + w) {
               if (ballX + radProj > x - h + (ballY - radProj - (y + w - h))) {
                 //directs to down
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             }
             break;
@@ -215,25 +246,31 @@ class Game {
                 ball.Vy *= -1;
               }
               ball.posY = y - h - r - 1; //avoid ball overlapping wall
-              let sound = wallHit.cloneNode(false);
-              sound.volume = wallHit.volume;
-              sound.play();
+              if (audioPack.wallHit) {
+                let sound = audioPack.wallHit.cloneNode(false);
+                sound.volume = audioPack.wallHit.volume;
+                sound.play();
+              }
             } else if (ballX < x && ballX > x - h) {
               // inclined walls
               if (ballY + radProj > y - h + (ballX - radProj - (x - h))) {
                 //directs to right
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             } else if (ballX > x - w && ballX < x - w + h) {
               if (ballY + radProj > y - h + (x - w + h - (ballX + radProj))) {
                 //directs to left
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             }
             break;
@@ -244,24 +281,30 @@ class Game {
                 ball.Vx *= -1;
               }
               ball.posX = x + h + r + 1; //avoid ball overlapping wall
-              let sound = wallHit.cloneNode(false);
-              sound.volume = wallHit.volume;
-              sound.play();
+              if (audioPack.wallHit) {
+                let sound = audioPack.wallHit.cloneNode(false);
+                sound.volume = audioPack.wallHit.volume;
+                sound.play();
+              }
             } else if (ballY > y - w && ballY < y - w + h) {
               if (ballX - radProj < x + h - (y - w + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             } else if (ballY > y - h && ballY < y) {
               if (ballX - radProj < x + h - (ballY - radProj - (y - h))) {
                 //directs down
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
-                let sound = wallHit.cloneNode(false);
-                sound.volume = wallHit.volume;
-                sound.play();
+                if (audioPack.wallHit) {
+                  let sound = audioPack.wallHit.cloneNode(false);
+                  sound.volume = audioPack.wallHit.volume;
+                  sound.play();
+                }
               }
             }
             break;
@@ -280,9 +323,11 @@ class Game {
         );
         if (distanceBallHole <= hole.radius) {
           this.balls.splice(indice, 1);
-          let sound = ballSinking.cloneNode(false);
-          sound.volume = ballSinking.volume;
-          sound.play();
+          if (audioPack.ballSinking) {
+            let sound = audioPack.ballSinking.cloneNode(false);
+            sound.volume = audioPack.ballSinking.volume;
+            sound.play();
+          }
           if (ball.color === color1) {
             console.log("White ball sinked, you lose point!");
             //check if there is free space to insert white ball again if it was sinked
@@ -296,7 +341,7 @@ class Game {
               }
             });
             this.balls.push(
-              new Balls(this.context, posX, posY, this.ballsRadius, color1)
+              new this.Balls(this.context, posX, posY, this.ballsRadius, color1)
             );
           }
         }
@@ -393,9 +438,11 @@ class Game {
         ballsCollidingWithBall1.forEach((ball2, index3) => {
           this.transferVelocity(ball1, ball2, dividedVx, dividedVy, index3);
           if (index3 === 0) {
-            let sound = ballHit.cloneNode(false);
-            sound.volume = ballHit.volume;
-            sound.play();
+            if (audioPack.ballHit) {
+              let sound = audioPack.ballHit.cloneNode(false);
+              sound.volume = audioPack.ballHit.volume;
+              sound.play();
+            }
           }
         });
         ball1.colisable = false;
@@ -441,7 +488,7 @@ class Game {
     });
   }
   startGame() {
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.createSnookerTable();
     this.renderBalls();
     this.checkColisionBallPoolCue();
@@ -488,7 +535,7 @@ function clickButton() {
   ambientContainer.style = "display:flex";
   musicContainer.style = "display:flex";
   context = canvas.getContext("2d");
-  game = new Game(canvas, context);
+  game = new Game(canvas, context, Balls, Walls, Holes, PoolCue, audioPack);
   game.createHoles();
   game.createWalls();
   game.createPoolCue();
@@ -563,4 +610,9 @@ function decreaseAmbient() {
     ballSinking.volume -= 0.05;
     wallHit.volume -= 0.05;
   }
+}
+
+//=== jest
+if (typeof module !== "undefined") {
+  module.exports = Game;
 }

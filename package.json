@@ -1,0 +1,18 @@
+{
+  "name": "ironsnooker",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watchAll --verbose=false"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "jest-canvas-mock": "^2.3.1"
+  },
+  "jest": {
+    "setupFiles": [
+      "jest-canvas-mock"
+    ]
+  }
+}

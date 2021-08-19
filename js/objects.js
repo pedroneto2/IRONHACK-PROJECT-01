@@ -186,3 +186,7 @@ class Balls extends Holes {
     this.Vy += velocityY;
   }
 }
+
+if (typeof module !== "undefined") {
+  module.exports = { Holes, Walls, PoolCue, Balls };
+}
