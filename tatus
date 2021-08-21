@@ -1,0 +1,59 @@
+[33mcommit 3b74dad0a6c57aafe4295247fa90a0d204f31576[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Fri Aug 20 21:16:29 2021 -0300
+
+    anti-overlapping with inclined walls added
+
+[33mcommit e8ec5305401a8c5acb8b67041078e7ac52447f35[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Wed Aug 18 23:24:26 2021 -0300
+
+    automated tests added with Jest
+
+[33mcommit 1bbaaed869198f7a290b9a7a60c8e1e47f1284cc[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Tue Aug 17 16:40:23 2021 -0300
+
+    spaceBar preventDefault() added
+
+[33mcommit fa53fe7a516cb8354c51130dee861240a9a5f5bf[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Tue Aug 17 16:14:14 2021 -0300
+
+    wall anti-overlapping fixed and favicon added
+
+[33mcommit 655db37ff14651b268a246358067e4806d392055[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Tue Aug 17 12:31:12 2021 -0300
+
+    anti OverLapping improved
+
+[33mcommit 84eee977817b77ceb901b29c41fd4d12b4ad1df9[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Mon Aug 16 23:22:21 2021 -0300
+
+    media added, some bugs to fix
+
+[33mcommit 9705d4e23d451ae4d06b018ff3daeea7532ff0ef[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Sun Aug 15 22:30:12 2021 -0300
+
+    Ball OverLapping Bug fixed =D
+
+[33mcommit a4426712620dbde4673b8871fd7b252428c21f96[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Sun Aug 15 10:10:18 2021 -0300
+
+    almost done
+
+[33mcommit 73e498fac47b76b79a1587141a27e47ed950ff43[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Fri Aug 13 23:03:40 2021 -0300
+
+    PROGRESS-02-BallColision Ok!
+
+[33mcommit bbded22a4c00b825e85219212b948f46e8e29d1d[m
+Author: pedroneto2 <pedro.neto992@gmail.com>
+Date:   Fri Aug 13 00:25:06 2021 -0300
+
+    PROGRESS-01:table+poolCue+balls colision with walls
