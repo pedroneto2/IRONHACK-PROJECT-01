@@ -186,6 +186,7 @@ class Game {
               if (ballY - radProj < y + h - (x + h - (ballX + radProj))) {
                 // directs to left
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                ball.posY = y + h - (x + h - (ballX + radProj)) + radProj + 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -197,6 +198,8 @@ class Game {
               if (ballY - radProj < y + h - (ballX - radProj - (x + w - h))) {
                 // directs to right
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                ball.posY =
+                  y + h - (ballX - radProj - (x + w - h)) + radProj + 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -221,6 +224,7 @@ class Game {
               if (ballX + radProj > x - h + (y + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                ball.posX = x - h + (y + h - (ballY + radProj)) - radProj - 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -231,6 +235,8 @@ class Game {
               if (ballX + radProj > x - h + (ballY - radProj - (y + w - h))) {
                 //directs to down
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                ball.posX =
+                  x - h + (ballY - radProj - (y + w - h)) - radProj - 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -256,6 +262,7 @@ class Game {
               if (ballY + radProj > y - h + (ballX - radProj - (x - h))) {
                 //directs to right
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                ball.posY = y - h + (ballX - radProj - (x - h)) - radProj - 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -266,6 +273,8 @@ class Game {
               if (ballY + radProj > y - h + (x - w + h - (ballX + radProj))) {
                 //directs to left
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                ball.posY =
+                  y - h + (x - w + h - (ballX + radProj)) - radProj - 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -290,6 +299,8 @@ class Game {
               if (ballX - radProj < x + h - (y - w + h - (ballY + radProj))) {
                 //directs to up
                 [ball.Vx, ball.Vy] = [ball.Vy, ball.Vx];
+                ball.posX =
+                  x + h - (y - w + h - (ballY + radProj)) + radProj + 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
@@ -300,6 +311,7 @@ class Game {
               if (ballX - radProj < x + h - (ballY - radProj - (y - h))) {
                 //directs down
                 [ball.Vx, ball.Vy] = [-ball.Vy, -ball.Vx];
+                ball.posX = x + h - (ballY - radProj - (y - h)) + radProj + 1; //avoid ball overlapping wall
                 if (audioPack.wallHit) {
                   let sound = audioPack.wallHit.cloneNode(false);
                   sound.volume = audioPack.wallHit.volume;
