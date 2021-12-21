@@ -7,7 +7,7 @@ This is a game made with canvas that simulate snooker
 ![Game Layout](https://github.com/pedroneto2/IRONHACK-PROJECTS/blob/master/images/The_game.jpg?raw=true)
 
 ### HOW TO PLAY
-Just access this link: https://pedroneto2.github.io/IRONHACK-PROJECTS/
+Just access this link: https://pedroneto2.github.io/IRONHACK-PROJECT-01/
 
 #### THE CODE
 There are still some bugs. If you would like to contribute I did some automated tests with Jest.
